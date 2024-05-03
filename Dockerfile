@@ -1,8 +1,15 @@
-FROM python:3.7-alpine
+#development phase
 
+FROM python:3.7-alpine
+LABEL maintainer = "Nityananda kumar sharma"
 
 ENV PYTHONUNBUFFERED 1
+#mention the path to entrypoint.sh
+ENV PATH="/scripts:${PATH}"
 
+RUN pip install --upgrade pip
+
+#copy local into docker image
 COPY ./requirements.txt /requirements.txt
 RUN apk add --update --no-cache postgresql-client jpeg-dev
 RUN apk add --update --no-cache --virtual .tmp-build-deps \
@@ -13,6 +20,8 @@ RUN apk del .tmp-build-deps
 RUN mkdir /app
 WORKDIR /app
 COPY ./app /app
+COPY ./scripts /scripts
+RUN chmod +x /scripts/*
 
 RUN mkdir -p /vol/web/media
 RUN mkdir -p /vol/web/static
@@ -20,3 +29,6 @@ RUN adduser -D user
 RUN chown -R user:user /vol/
 RUN chmod -R 755 /vol/web
 USER user
+VOLUME /vol/web
+
+CMD ["entrypoint.sh"]
