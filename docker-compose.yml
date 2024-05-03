@@ -17,6 +17,8 @@ services:
       - DB_NAME=app
       - DB_USER=postgres
       - DB_PASS=supersecretpassword
+      #for local 
+      - DEBUG=1
     depends_on:
       - db
 
