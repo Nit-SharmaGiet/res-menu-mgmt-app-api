@@ -12,13 +12,21 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'r*#fqj65k!9s9*+#c6a%2h-um50sjmzbe8dd1vyw$+-l$mz(jt'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'changeme') # for local
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))    #true as 1, false as 0
+#DEBUG = True # for local
 
 ALLOWED_HOSTS = []
 
+#split the hosts with comma delimiter
+ALLOWED_HOSTS.extend(
+    filter(
+        None,
+        os.environ.get('ALLOWED_HOSTS', '').split(',')
+    )
+)
 
 # Application definition
 
@@ -117,8 +125,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+#make sure both the static and media are routed via static only.
+STATIC_URL = '/static/static/'
+MEDIA_URL = '/static/media/'
 
 MEDIA_ROOT = '/vol/web/media'
 STATIC_ROOT = '/vol/web/static'
