@@ -3,8 +3,8 @@ version: '3.7'
 services:
   terraform:
     image: hashicorp/terraform:1.0.0
+ #now map the local directory /deploy  to   /infra inside the running service.
 
-    #now map the local directory /deploy  to   /infra inside the running service.
     volumes:
       - .:/infra
     working_dir: /infra
