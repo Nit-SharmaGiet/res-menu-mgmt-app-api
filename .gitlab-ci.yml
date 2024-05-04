@@ -68,9 +68,13 @@ Build and Push: #under feature/cicd-buildandpush
 
 Staging Plan:
   stage: Staging Plan
-  script:
-  #placeholder script
-    - echo "Run Terraform Plan for Staging"
+  script: #placeholder script been replaced with below.
+    - cd Deploy/
+    #assign the image:tag to a env variable TF_VAR_<>
+    - TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
+    - terraform init
+    - terraform workspace select staging || terraform worksoace new staging
+    - terraform plan
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
 ##################################################################################################
@@ -86,9 +90,13 @@ Staging Apply:
 
 Production Plan:
   stage: Production Plan
-  script:
-  #placeholder script
-    - echo "Run Terraform Plan for Production"
+  script: #placeholder script been replaced with below.
+    - cd Deploy/
+    #assign the image:tag to a env variable TF_VAR_<>
+    - TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
+    - terraform init
+    - terraform workspace select production || terraform worksoace new production
+    - terraform plan
   rules:
     - if: '$CI_COMMIT_BRANCH == "production"'
 ##################################################################################################
