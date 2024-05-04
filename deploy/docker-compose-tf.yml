@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  terraform:
+    image: hashicorp/terraform:1.0.0
+ #now map the local directory /deploy  to   /infra inside the running service.
+
+    volumes:
+      - .:/infra
+    working_dir: /infra
+    #save the values in aws-vault locally
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
