@@ -1,0 +1,94 @@
+#Create gitlab pipeline for all the environmental stages of the IaC
+
+stages:
+  - Test and Lint     #[only if (merging is to main/production branch) or (commit branch is main/production branch)] , also Validate
+  - Build and Push    #only if commit branch is Main/production
+  - Staging Plan      #only if commit branch is Main/production
+  - Staging Apply     #only if commit branch is Main/production
+  - Production Plan   #only if commit branch is production
+  - Production Apply  #manual, only if commit branch is production 
+  - Destroy           #manual for both, staging is for either main/production , production is for only production 
+
+Test and Lint:
+  stage: Test and Lint
+  script:
+    #placeholder script
+    - echo "Test and Lint"
+  rules:
+  #only if (merging is to main branch) or (commit branch is main branch)
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(main|production)$/ || $CI_COMMIT_BRANCH =~ /^(main|production)$/'
+
+Validate Terraform:
+  stage: Test and Lint
+  script:
+    #placeholder script
+    - echo "Validate Terraform"
+  rules:
+    #only if (merging is to main branch) or (commit branch is main branch)
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(main|production)$/ || $CI_COMMIT_BRANCH =~ /^(main|production)$/'
+
+##################################################################################################
+
+Build and Push:
+  stage: Build and Push
+  script:
+  #placeholder script
+    - echo "Build and Push docker image"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
+##################################################################################################
+
+Staging Plan:
+  stage: Staging Plan
+  script:
+  #placeholder script
+    - echo "Run Terraform Plan for Staging"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
+##################################################################################################
+
+Staging Apply:
+  stage: Staging Apply
+  script:
+  #placeholder script
+    - echo "Run Terraform Apply for Staging"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
+##################################################################################################
+
+Production Plan:
+  stage: Production Plan
+  script:
+  #placeholder script
+    - echo "Run Terraform Plan for Production"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "production"'
+##################################################################################################
+
+Production Apply:
+  stage: Production Apply
+  script:
+  #placeholder script
+    - echo "Run Terraform Apply for Production"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "production"'
+      when: manual
+##################################################################################################
+
+Staging Destroy:
+  stage: Destroy
+  script:
+  #placeholder script
+    - echo "Run Terraform Destroy for Staging"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
+      when: manual
+
+Production Destroy:
+  stage: Destroy
+  script:
+  #placeholder script
+    - echo "Run Terraform Destroy for Production"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "production"'
+      when: manual
