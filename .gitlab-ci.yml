@@ -81,9 +81,13 @@ Staging Plan:
 
 Staging Apply:
   stage: Staging Apply
-  script:
-  #placeholder script
-    - echo "Run Terraform Apply for Staging"
+  script: #placeholder script been replaced with below.
+    - cd Deploy/
+    - export TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
+    - terraform init
+    - terraform workspace select staging
+    #no more planning...haha
+    - terraform apply -auto-approve
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
 ##################################################################################################
@@ -103,9 +107,13 @@ Production Plan:
 
 Production Apply:
   stage: Production Apply
-  script:
-  #placeholder script
-    - echo "Run Terraform Apply for Production"
+  script: #placeholder script been replaced with below.
+    - cd Deploy/
+    - export TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
+    - terraform init
+    - terraform workspace select production
+    #no more planning...haha
+    - terraform apply -auto-approve
   rules:
     - if: '$CI_COMMIT_BRANCH == "production"'
       when: manual
