@@ -1,8 +1,18 @@
-#Create gitlab pipeline for all the environmental stages of the IaC
+image:  
+  name: hashicorp/terraform:1.0.0
 
+#But the default executable is set to terraform which wont execute the below script & terraform command as it is.
+#Because of this limitation to build job in pipeline, it became incompatible with gitlab. 
+#So add below to overwrite the default entrypoint and let the terraform be considered as a usual container.
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+
+#Create gitlab pipeline for all the environmental stages of the IaC
 stages:
-  - Test and Lint     #[only if (merging is to main/production branch) or (commit branch is main/production branch)] , also Validate
-  - Build and Push    #only if commit branch is Main/production
+  - Test and Lint     #[only if (merging is to main/production branch) or (commit branch is main/production branch)] , also Validate, doesnt need terraform image
+  - Build and Push    #only if commit branch is Main/production, doesnt need terraform image
   - Staging Plan      #only if commit branch is Main/production
   - Staging Apply     #only if commit branch is Main/production
   - Production Plan   #only if commit branch is production
@@ -10,19 +20,24 @@ stages:
   - Destroy           #manual for both, staging is for either main/production , production is for only production 
 
 Test and Lint:
+  image: docker:19.03.5
+  services:
+    - docker:19.03.5-dind
   stage: Test and Lint
-  script:
-    #placeholder script
-    - echo "Test and Lint"
+  script: #placeholder script been replaced with below.
+    - apk add --update docker-compose
+    - docker-compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test && flake8"
   rules:
   #only if (merging is to main branch) or (commit branch is main branch)
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(main|production)$/ || $CI_COMMIT_BRANCH =~ /^(main|production)$/'
 
 Validate Terraform:
   stage: Test and Lint
-  script:
-    #placeholder script
-    - echo "Validate Terraform"
+  script: #placeholder script been replaced with below.
+    - cd deploy/
+    - terraform init -backend=false  #bcoz no need to expose creds here itself, we can configure it in further stages.
+    - terraform validate
+    - terraform fmt -check  #do not format it when its in pipeline, just do check and if not correct, make the job fail.
   rules:
     #only if (merging is to main branch) or (commit branch is main branch)
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(main|production)$/ || $CI_COMMIT_BRANCH =~ /^(main|production)$/'
