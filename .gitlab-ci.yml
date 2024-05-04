@@ -73,7 +73,7 @@ Staging Plan:
     #assign the image:tag to a env variable TF_VAR_<>
     - TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
     - terraform init
-    - terraform workspace select staging || terraform worksoace new staging
+    - terraform workspace select staging || terraform workspace new staging
     - terraform plan
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
@@ -99,6 +99,7 @@ Production Plan:
     #assign the image:tag to a env variable TF_VAR_<>
     - TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
     - terraform init
+    #either select, if not exists create new
     - terraform workspace select production || terraform workspace new production
     - terraform plan
   rules:
