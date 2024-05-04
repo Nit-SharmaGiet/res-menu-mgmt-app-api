@@ -69,7 +69,7 @@ Build and Push: #under feature/cicd-buildandpush
 Staging Plan:
   stage: Staging Plan
   script: #placeholder script been replaced with below.
-    - cd Deploy/
+    - cd deploy/
     #assign the image:tag to a env variable TF_VAR_<>
     - TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
     - terraform init
@@ -82,7 +82,7 @@ Staging Plan:
 Staging Apply:
   stage: Staging Apply
   script: #placeholder script been replaced with below.
-    - cd Deploy/
+    - cd deploy/
     - export TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
     - terraform init
     - terraform workspace select staging
@@ -107,8 +107,8 @@ Production Plan:
 
 Production Apply:
   stage: Production Apply
-  script: #placeholder script been replaced with below.
-    - cd Deploy/
+  script: 
+    - cd deploy/
     - export TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
     - terraform init
     - terraform workspace select production
@@ -121,18 +121,22 @@ Production Apply:
 
 Staging Destroy:
   stage: Destroy
-  script:
-  #placeholder script
-    - echo "Run Terraform Destroy for Staging"
+  script: #placeholder script been replaced with below.
+    - cd deploy/
+    - terraform init
+    - terraform workspace select staging
+    - terraform destroy -auto-approve
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
       when: manual
 
 Production Destroy:
   stage: Destroy
-  script:
-  #placeholder script
-    - echo "Run Terraform Destroy for Production"
+  script: #placeholder script been replaced with below.
+    - cd Deploy/
+    - terraform init
+    - terraform workspace select production
+    - terraform destroy -auto-approve
   rules:
     - if: '$CI_COMMIT_BRANCH == "production"'
       when: manual
