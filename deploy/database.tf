@@ -24,6 +24,11 @@ resource "aws_security_group" "rds" {
     protocol  = "tcp"
     from_port = 5432 #default
     to_port   = 5432
+
+    #Now allow only resource which are under bastion security groups
+    security_groups = [
+      aws_security_group.bastion.id
+    ]
   }
 
   tags = local.common_tags
