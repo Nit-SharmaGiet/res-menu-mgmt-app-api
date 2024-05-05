@@ -11,3 +11,11 @@ variable "project" {
 variable "contact" {
   default = "nityanandakuamrsharma@gmail.com"
 }
+
+variable "db_username" {
+  description = "USERNAME for the RDS Postgres instance"
+}
+
+variable "db_password" {
+  description = "PASSOWRD for the RDS postgres instance"
+}
