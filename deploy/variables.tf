@@ -19,3 +19,8 @@ variable "db_username" {
 variable "db_password" {
   description = "PASSOWRD for the RDS postgres instance"
 }
+
+#ssh key for bastion, the one which you already created via console using ssh-key gen. 
+variable "bastion_key_name" {
+  default = "res-menu-mgmt-app-api-bastion-keypair"
+}
