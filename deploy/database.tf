@@ -1,7 +1,3 @@
-
-
-
-
 resource "aws_db_subnet_group" "main" {
   name = "${local.prefix}-main"
   subnet_ids = [
@@ -38,8 +34,8 @@ resource "aws_db_instance" "main" {
   allocated_storage       = 15
   storage_type            = "gp2"
   engine                  = "postgres"
-  engine_version          = "12.18"
-  instance_class          = "db.t2.micro"
+  engine_version          = "15.4"
+  instance_class          = "db.t3.micro"
   db_subnet_group_name    = aws_db_subnet_group.main.name
   password                = var.db_password
   username                = var.db_username
