@@ -121,7 +121,7 @@ Production Apply:
 ##################################################################################################
 
 Staging Destroy:
-  stage: destroy
+  stage: Destroy
   script: #placeholder script been replaced with below.
     - cd deploy/
     - terraform init
@@ -132,7 +132,7 @@ Staging Destroy:
       when: manual
 
 Production Destroy:
-  stage: destroy
+  stage: Destroy
   script: #placeholder script been replaced with below.
     - cd deploy/
     - terraform init
