@@ -95,7 +95,7 @@ Staging Apply:
 Production Plan:
   stage: Production Plan
   script: #placeholder script been replaced with below.
-    - cd Deploy/
+    - cd deploy/
     #assign the image:tag to a env variable TF_VAR_<>
     - TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
     - terraform init
@@ -121,7 +121,7 @@ Production Apply:
 ##################################################################################################
 
 Staging Destroy:
-  stage: Destroy
+  stage: destroy
   script: #placeholder script been replaced with below.
     - cd deploy/
     - terraform init
@@ -132,12 +132,14 @@ Staging Destroy:
       when: manual
 
 Production Destroy:
-  stage: Destroy
+  stage: destroy
   script: #placeholder script been replaced with below.
-    - cd Deploy/
+    - cd deploy/
     - terraform init
     - terraform workspace select production
     - terraform destroy -auto-approve
   rules:
     - if: '$CI_COMMIT_BRANCH == "production"'
       when: manual
+
+#END
