@@ -19,7 +19,7 @@ stages:
   - Production Apply  #manual, only if commit branch is production 
   - Destroy           #manual for both, staging is for either main/production , production is for only production 
 
-Test and Lint:
+Test and Lint: #under feature/cicd-lint passed to production
   image: docker:19.03.5
   services:
     - docker:19.03.5-dind
@@ -31,7 +31,7 @@ Test and Lint:
   #only if (merging is to main branch) or (commit branch is main branch)
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(main|production)$/ || $CI_COMMIT_BRANCH =~ /^(main|production)$/'
 
-Validate Terraform:
+Validate Terraform: #under feature/cicd-lint passed to production
   stage: Test and Lint
   script: #placeholder script been replaced with below.
     - cd deploy/
@@ -44,47 +44,77 @@ Validate Terraform:
 
 ##################################################################################################
 
-Build and Push:
+Build and Push: #under feature/cicd-buildandpush
+  image: docker:19.03.5
+  services:
+    - docker:19.03.5-dind
   stage: Build and Push
-  script:
-  #placeholder script
-    - echo "Build and Push docker image"
+  script: #placeholder script been replaced with below.
+    - apk add python3
+    - pip3 install awscli
+    #assign the COMMIT environment value of gitlab as a tag to repo, to make it unique. 
+    - docker build --compress -t $ECR_REPO:$CI_COMMIT_SHORT_SHA .
+    #get docker login command then execute the docker login command
+    - $(aws ecr get-login --no-include-email --region us-east-1)
+    #push image to ECR registry. this image will be stored in ECR in every push, so that one can track up/ down to any version they need.
+    - docker push $ECR_REPO:$CI_COMMIT_SHORT_SHA
+    #tag the current one as latest
+    - docker tag $ECR_REPO:$CI_COMMIT_SHORT_SHA $ECR_REPO:latest
+    #then push the latest also to ECR registry. the latest version is the ECR will be overwritten once a new push happens.
+    - docker push $ECR_REPO:latest
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
 ##################################################################################################
 
 Staging Plan:
   stage: Staging Plan
-  script:
-  #placeholder script
-    - echo "Run Terraform Plan for Staging"
+  script: #placeholder script been replaced with below.
+    - cd deploy/
+    #assign the image:tag to a env variable TF_VAR_<>
+    - TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
+    - terraform init
+    - terraform workspace select staging || terraform workspace new staging
+    - terraform plan
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
 ##################################################################################################
 
 Staging Apply:
   stage: Staging Apply
-  script:
-  #placeholder script
-    - echo "Run Terraform Apply for Staging"
+  script: #placeholder script been replaced with below.
+    - cd deploy/
+    - export TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
+    - terraform init
+    - terraform workspace select staging
+    #no more planning...haha
+    - terraform apply -auto-approve
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
 ##################################################################################################
 
 Production Plan:
   stage: Production Plan
-  script:
-  #placeholder script
-    - echo "Run Terraform Plan for Production"
+  script: #placeholder script been replaced with below.
+    - cd Deploy/
+    #assign the image:tag to a env variable TF_VAR_<>
+    - TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
+    - terraform init
+    #either select, if not exists create new
+    - terraform workspace select production || terraform workspace new production
+    - terraform plan
   rules:
     - if: '$CI_COMMIT_BRANCH == "production"'
 ##################################################################################################
 
 Production Apply:
   stage: Production Apply
-  script:
-  #placeholder script
-    - echo "Run Terraform Apply for Production"
+  script: 
+    - cd deploy/
+    - export TF_VAR_ecr_image_api=$ECR_REPO:$CI_COMMIT_SHORT_SHA
+    - terraform init
+    - terraform workspace select production
+    #no more planning...haha
+    - terraform apply -auto-approve
   rules:
     - if: '$CI_COMMIT_BRANCH == "production"'
       when: manual
@@ -92,18 +122,22 @@ Production Apply:
 
 Staging Destroy:
   stage: Destroy
-  script:
-  #placeholder script
-    - echo "Run Terraform Destroy for Staging"
+  script: #placeholder script been replaced with below.
+    - cd deploy/
+    - terraform init
+    - terraform workspace select staging
+    - terraform destroy -auto-approve
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^(main|production)$/'
       when: manual
 
 Production Destroy:
   stage: Destroy
-  script:
-  #placeholder script
-    - echo "Run Terraform Destroy for Production"
+  script: #placeholder script been replaced with below.
+    - cd Deploy/
+    - terraform init
+    - terraform workspace select production
+    - terraform destroy -auto-approve
   rules:
     - if: '$CI_COMMIT_BRANCH == "production"'
       when: manual
