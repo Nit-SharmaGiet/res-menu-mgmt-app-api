@@ -123,6 +123,7 @@ resource "aws_ecs_service" "api" {
   cluster         = aws_ecs_cluster.main.name
   task_definition = aws_ecs_task_definition.api.family
   desired_count   = 1
+  platform_version = "1.4.0"
   launch_type     = "FARGATE"
 
   #for test, upload in public
