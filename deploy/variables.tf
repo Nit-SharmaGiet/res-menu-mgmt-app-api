@@ -24,3 +24,23 @@ variable "db_password" {
 variable "bastion_key_name" {
   default = "res-menu-mgmt-app-api-bastion-keypair"
 }
+
+
+##################
+
+variable "ecr_image_api" {
+  description = "ECR Image for API"
+  default     = "975049961532.dkr.ecr.us-east-1.amazonaws.com/res-menu-mgmt-app-api:latest"
+}
+
+variable "ecr_image_proxy" {
+  description = "ECR Image for API"
+
+  #this default will be overrriden by .gitlab-ci.yml's $ECR_REPO:$CI_COMMIT_SHA
+  default = "975049961532.dkr.ecr.us-east-1.amazonaws.com/res-menu-mgmt-app-api-proxy:latest"
+}
+
+#django secret key
+variable "django_secret_key" {
+  description = "Secret key for Django app"
+}
