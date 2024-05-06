@@ -27,7 +27,8 @@ resource "aws_security_group" "rds" {
 
     #Now allow only resource which are under bastion security groups
     security_groups = [
-      aws_security_group.bastion.id
+      aws_security_group.bastion.id,
+      aws_security_group.ecs_service.id,
     ]
   }
 
@@ -36,6 +37,7 @@ resource "aws_security_group" "rds" {
 
 resource "aws_db_instance" "main" {
   identifier              = "${local.prefix}-db"
+  db_name                 = "menu"
   allocated_storage       = 15
   storage_type            = "gp2"
   engine                  = "postgres"
