@@ -30,7 +30,8 @@ ALLOWED_HOSTS.extend(
 )
 
 if os.environ.get('AWS_EXECUTION_ENV'):
-    ALLOWED_HOSTS.append(gethostbyname(gethostname))
+    ALLOWED_HOSTS.append(gethostbyname(gethostname()))
+
 # Application definition
 
 INSTALLED_APPS = [
