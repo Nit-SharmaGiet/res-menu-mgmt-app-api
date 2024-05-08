@@ -30,14 +30,14 @@ variable "bastion_key_name" {
 
 variable "ecr_image_api" {
   description = "ECR Image for API"
-  default     = "975049961532.dkr.ecr.us-east-1.amazonaws.com/res-menu-mgmt-app-api:latest"
+  default     = "<acoount_is>.dkr.ecr.us-east-1.amazonaws.com/res-menu-mgmt-app-api:latest"
 }
 
 variable "ecr_image_proxy" {
   description = "ECR Image for API"
 
   #this default will be overrriden by .gitlab-ci.yml's $ECR_REPO:$CI_COMMIT_SHA
-  default = "975049961532.dkr.ecr.us-east-1.amazonaws.com/res-menu-mgmt-app-api-proxy:latest"
+  default = "<acoount_is>.dkr.ecr.us-east-1.amazonaws.com/res-menu-mgmt-app-api-proxy:latest"
 }
 
 #django secret key
